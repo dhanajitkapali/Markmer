@@ -2,6 +2,8 @@
 
 A native macOS Markdown reader with built-in Mermaid diagram rendering and a sidebar of recent files.
 
+**Website:** https://dhanajitkapali.github.io/Markmer/
+
 ![Markmer icon](Markmer/Assets.xcassets/AppIcon.appiconset/icon_128x128@2x.png)
 
 ## Features

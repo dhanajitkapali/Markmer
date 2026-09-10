@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Markmer — a tiny Markdown reader for macOS with Mermaid diagrams</title>
+<meta name="description" content="AI creates .md files. Your Mac can't open them. Markmer is a 1.3 MB native macOS Markdown reader that renders Mermaid diagrams inline.">
+<meta property="og:title" content="Markmer — Markdown reader for macOS">
+<meta property="og:description" content="AI creates .md files. Your Mac can't open them. Markmer does — Mermaid diagrams included, in 1.3 MB.">
+<meta property="og:image" content="https://dhanajitkapali.github.io/Markmer/og-image.png">
+<meta property="og:type" content="website">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="icon.png">
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #ffffff;
+    --bg-2: #f6f8fa;
+    --fg: #1f2328;
+    --muted: #656d76;
+    --border: #d0d7de;
+    --code-bg: #f6f8fa;
+    --accent: #6d5df6;
+    --accent-2: #3ec9b6;
+    --accent-fg: #ffffff;
+    --shadow: 0 30px 80px -20px rgba(31, 35, 40, .25), 0 0 0 1px rgba(31, 35, 40, .06);
+    --window: #ffffff;
+    --titlebar: #f2f2f4;
+    --sidebar: #f7f7f9;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #141518;
+      --bg-2: #1b1d22;
+      --fg: #e6edf3;
+      --muted: #9198a1;
+      --border: #30363d;
+      --code-bg: #1e2126;
+      --accent: #8b7dff;
+      --accent-2: #4fd6c2;
+      --accent-fg: #0f0d1f;
+      --shadow: 0 30px 80px -20px rgba(0, 0, 0, .7), 0 0 0 1px rgba(255, 255, 255, .06);
+      --window: #1e1e1e;
+      --titlebar: #2a2a2d;
+      --sidebar: #232326;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--fg); }
+  body {
+    font: 16px/1.6 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  code, pre, kbd { font-family: "SF Mono", ui-monospace, Menlo, Monaco, Consolas, monospace; }
+  code { font-size: 88%; padding: .15em .4em; background: var(--code-bg); border: 1px solid var(--border); border-radius: 6px; }
+  pre { margin: 0; padding: 14px 16px; overflow: auto; font-size: 13px; line-height: 1.5; background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px; }
+  pre code { padding: 0; border: 0; background: transparent; font-size: 100%; }
+  kbd { display: inline-block; padding: 2px 6px; font-size: 11px; line-height: 12px; border: 1px solid var(--border); border-bottom-width: 3px; border-radius: 6px; background: var(--code-bg); }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+  h1, h2, h3 { line-height: 1.15; letter-spacing: -0.02em; font-weight: 700; margin: 0; text-wrap: balance; }
+  h2 { font-size: clamp(28px, 4vw, 40px); margin-bottom: 12px; }
+  h3 { font-size: 18px; font-weight: 650; margin-bottom: 6px; }
+  .lede { color: var(--muted); font-size: 18px; max-width: 620px; margin: 0 0 36px; }
+  section { padding: 88px 0; }
+  section + section { border-top: 1px solid var(--border); }
+  .eyebrow { display: inline-block; font-size: 12px; font-weight: 650; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+
+  /* Nav */
+  nav { display: flex; align-items: center; justify-content: space-between; padding: 18px 0; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 650; color: var(--fg); }
+  .brand img { width: 32px; height: 32px; border-radius: 8px; }
+  nav .links { display: flex; gap: 22px; font-size: 15px; }
+  nav .links a { color: var(--muted); }
+  nav .links a:hover { color: var(--fg); text-decoration: none; }
+
+  /* Hero */
+  .hero { padding: 56px 0 96px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 56px; align-items: center; }
+  .hero h1 { font-size: clamp(38px, 5.4vw, 64px); }
+  .hero h1 .line2 { display: block; color: var(--muted); font-weight: 600; }
+  .hero h1 .line2 strong { color: var(--fg); font-weight: 700; }
+  .hero .sub { font-size: 19px; color: var(--muted); margin: 22px 0 32px; max-width: 480px; }
+  .cta { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 18px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 10px; padding: 14px 22px; border-radius: 12px;
+    font-weight: 650; font-size: 16px; color: var(--accent-fg); text-decoration: none;
+    background: linear-gradient(135deg, var(--accent), #5a48f0); box-shadow: 0 10px 30px -10px var(--accent);
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .btn:hover { transform: translateY(-1px); text-decoration: none; box-shadow: 0 14px 34px -10px var(--accent); }
+  .btn svg { width: 18px; height: 18px; }
+  .btn-ghost { background: transparent; color: var(--fg); border: 1px solid var(--border); box-shadow: none; }
+  .btn-ghost:hover { box-shadow: none; background: var(--bg-2); }
+  .meta { font-size: 13px; color: var(--muted); margin-top: 16px; display: flex; flex-wrap: wrap; gap: 6px 14px; }
+  .meta span { display: inline-flex; align-items: center; gap: 6px; }
+  .meta span::before { content: ""; width: 4px; height: 4px; border-radius: 50%; background: var(--accent-2); }
+
+  /* Fake app window */
+  .window {
+    border-radius: 14px; overflow: hidden; background: var(--window); box-shadow: var(--shadow);
+    display: grid; grid-template-columns: 168px 1fr; min-height: 440px; font-size: 13px;
+  }
+  .titlebar { grid-column: 1 / -1; height: 40px; background: var(--titlebar); display: flex; align-items: center; padding: 0 14px; gap: 8px; border-bottom: 1px solid var(--border); }
+  .dot { width: 12px; height: 12px; border-radius: 50%; }
+  .dot.r { background: #ff5f57; } .dot.y { background: #febc2e; } .dot.g { background: #28c840; }
+  .titlebar .title { margin-left: auto; margin-right: auto; color: var(--muted); font-weight: 500; }
+  .titlebar .zoom { display: flex; gap: 4px; }
+  .titlebar .zoom span { width: 24px; height: 20px; border: 1px solid var(--border); border-radius: 5px; display: grid; place-items: center; color: var(--muted); font-size: 12px; }
+  .sidebar { background: var(--sidebar); border-right: 1px solid var(--border); padding: 12px 8px; }
+  .sidebar .search { height: 26px; border-radius: 7px; border: 1px solid var(--border); background: var(--window); color: var(--muted); padding: 0 8px; display: flex; align-items: center; margin-bottom: 10px; font-size: 12px; }
+  .sidebar .item { padding: 6px 8px; border-radius: 6px; color: var(--fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sidebar .item small { display: block; color: var(--muted); font-size: 11px; }
+  .sidebar .item.active { background: var(--accent); color: #fff; }
+  .sidebar .item.active small { color: rgba(255,255,255,.75); }
+  .doc { padding: 22px 26px; font-size: 14px; line-height: 1.55; }
+  .doc h4 { margin: 0 0 8px; font-size: 20px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+  .doc p { margin: 0 0 10px; }
+  .doc ul { margin: 0 0 10px; padding-left: 20px; }
+  .doc .mermaid-diagram { display: flex; justify-content: center; margin: 10px 0 4px; padding: 14px 10px; border: 1px solid var(--border); border-radius: 10px; background: var(--code-bg); overflow-x: auto; }
+  .doc .mermaid-diagram svg { max-width: 100%; height: auto; }
+
+  /* Problem strip */
+  .problem { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: stretch; }
+  .card { border: 1px solid var(--border); border-radius: 16px; padding: 26px 28px; background: var(--bg-2); }
+  .card .tag { font-size: 12px; font-weight: 650; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+  .card.bad .tag { color: #d1242f; }
+  .card.good .tag { color: var(--accent-2); }
+  .card p { margin: 0; color: var(--muted); }
+  .card pre { margin-top: 16px; }
+  .raw { color: var(--muted); }
+  .raw .hl { color: var(--fg); }
+
+  /* Mermaid side by side */
+  .pair { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 24px; align-items: stretch; margin-top: 8px; }
+  .pane { border: 1px solid var(--border); border-radius: 14px; overflow: hidden; background: var(--bg-2); display: flex; flex-direction: column; }
+  .pane header { padding: 10px 16px; font-size: 12px; font-weight: 650; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; }
+  .pane pre { border: 0; border-radius: 0; flex: 1; background: transparent; }
+  .pane .render { flex: 1; display: flex; align-items: center; justify-content: center; padding: 22px; min-height: 260px; }
+  .pane .render svg { max-width: 100%; height: auto; }
+  .types { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+  .types span { font-size: 13px; padding: 5px 11px; border-radius: 999px; border: 1px solid var(--border); color: var(--muted); }
+  .switcher { display: flex; gap: 6px; }
+  .switcher button { font: inherit; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; }
+  .switcher button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  /* Stats */
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin: 36px 0 28px; }
+  .stat { border: 1px solid var(--border); border-radius: 16px; padding: 22px 22px 18px; background: var(--bg-2); }
+  .stat .n { font-size: 40px; font-weight: 700; letter-spacing: -0.03em; line-height: 1; background: linear-gradient(135deg, var(--accent), var(--accent-2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .stat .l { color: var(--muted); margin-top: 8px; font-size: 14px; }
+  .light-notes { display: grid; grid-template-columns: 1fr 1fr; gap: 24px 40px; color: var(--muted); }
+  .light-notes strong { color: var(--fg); }
+
+  /* Features */
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 28px; }
+  .feat { border: 1px solid var(--border); border-radius: 16px; padding: 22px; background: var(--bg-2); }
+  .feat .ic { width: 38px; height: 38px; border-radius: 10px; display: grid; place-items: center; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; margin-bottom: 14px; }
+  .feat .ic svg { width: 20px; height: 20px; }
+  .feat p { margin: 0; color: var(--muted); font-size: 15px; }
+
+  /* Install */
+  .steps { counter-reset: step; display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 28px; }
+  .step { border: 1px solid var(--border); border-radius: 16px; padding: 22px; background: var(--bg-2); position: relative; }
+  .step::before { counter-increment: step; content: counter(step); position: absolute; top: 18px; right: 20px; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: #fff; font-weight: 700; font-size: 14px; display: grid; place-items: center; }
+  .step p { margin: 0; color: var(--muted); font-size: 15px; }
+  .step pre { margin-top: 12px; }
+  .note { margin-top: 22px; padding: 16px 18px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg-2); color: var(--muted); font-size: 15px; }
+
+  footer { border-top: 1px solid var(--border); padding: 36px 0 48px; color: var(--muted); font-size: 14px; display: flex; flex-wrap: wrap; gap: 12px 28px; justify-content: space-between; }
+
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; gap: 40px; padding-top: 32px; }
+    .problem, .pair, .light-notes { grid-template-columns: 1fr; }
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .grid, .steps { grid-template-columns: 1fr; }
+    .window { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    nav .links a:not(:last-child) { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <nav>
+    <a class="brand" href="#"><img src="icon.png" alt="" width="32" height="32"> Markmer</a>
+    <div class="links">
+      <a href="#mermaid">Mermaid</a>
+      <a href="#lightweight">Lightweight</a>
+      <a href="#install">Install</a>
+      <a href="https://github.com/dhanajitkapali/Markmer">GitHub</a>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div>
+      <h1>
+        AI creates .md files.
+        <span class="line2">Your Mac <strong>can't open them.</strong></span>
+      </h1>
+      <p class="sub">Markmer is a tiny native Markdown reader for macOS. Double-click any <code>.md</code> file and read it like a document, with Mermaid diagrams rendered right where they belong.</p>
+      <div class="cta">
+        <a class="btn" id="download" href="https://github.com/dhanajitkapali/Markmer/releases/latest">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M4 19h16"/></svg>
+          <span id="download-label">Download for macOS</span>
+        </a>
+        <a class="btn btn-ghost" href="https://github.com/dhanajitkapali/Markmer">View source</a>
+      </div>
+      <div class="meta">
+        <span id="meta-size">1.3 MB download</span>
+        <span>macOS 14 Sonoma or later</span>
+        <span>Apple Silicon &amp; Intel</span>
+        <span>Free &amp; open source</span>
+      </div>
+    </div>
+
+    <div class="window" aria-label="Markmer app window showing a rendered Markdown file with a Mermaid diagram">
+      <div class="titlebar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <span class="title">PLAN.md — Markmer</span>
+        <span class="zoom"><span>−</span><span>+</span></span>
+      </div>
+      <aside class="sidebar">
+        <div class="search">Search recents</div>
+        <div class="item active">PLAN.md<small>~/Projects/api</small></div>
+        <div class="item">README.md<small>~/Projects/api</small></div>
+        <div class="item">ARCHITECTURE.md<small>~/Projects/web</small></div>
+        <div class="item">notes.md<small>~/Desktop</small></div>
+        <div class="item">CHANGELOG.md<small>~/Projects/cli</small></div>
+      </aside>
+      <div class="doc">
+        <h4>Migration plan</h4>
+        <p>Move sessions from Redis to Postgres without downtime. Rollout is gated on the shadow-write metrics.</p>
+        <ul>
+          <li><strong>Phase 1:</strong> dual-write behind a flag</li>
+          <li><strong>Phase 2:</strong> read from Postgres, fall back to Redis</li>
+        </ul>
+        <div class="mermaid-diagram"><pre class="mermaid">flowchart LR
+    A([Request]) --> B{Flag on?}
+    B -- yes --> C[(Postgres)]
+    B -- no --> D[(Redis)]
+    C --> E([Response])
+    D --> E</pre></div>
+      </div>
+    </div>
+  </header>
+</div>
+
+<section id="problem">
+  <div class="wrap">
+    <span class="eyebrow">The problem</span>
+    <h2>Every AI tool writes Markdown. macOS reads it as plain text.</h2>
+    <p class="lede">Claude, ChatGPT, Copilot and Cursor hand you <code>README.md</code>, <code>PLAN.md</code> and notes full of diagrams. Double-click one on a Mac and you get TextEdit showing raw symbols, or Xcode grinding to life.</p>
+    <div class="problem">
+      <div class="card bad">
+        <div class="tag">Without Markmer</div>
+        <p>TextEdit opens the file. Headings are pound signs, tables are pipes, and the diagram is a wall of arrows.</p>
+<pre class="raw"><code># Migration plan
+
+| Phase | Owner | Status |
+|-------|-------|--------|
+| 1     | Ana   | done   |
+
+```mermaid
+flowchart LR
+  A --> B --> C
+```</code></pre>
+      </div>
+      <div class="card good">
+        <div class="tag">With Markmer</div>
+        <p>The same file opens as a formatted page: real headings, a real table, syntax-highlighted code and the diagram drawn as a diagram. Edit the file in your editor and Markmer re-renders in place.</p>
+        <pre><code>open -a Markmer PLAN.md   # or just double-click it</code></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="mermaid">
+  <div class="wrap">
+    <span class="eyebrow">Mermaid, built in</span>
+    <h2>Diagrams render inline. No plugin, no browser tab.</h2>
+    <p class="lede">A <code>```mermaid</code> fence becomes a drawing, themed to match light or dark mode. If a diagram has a syntax error, Markmer shows the error and the source instead of a blank box.</p>
+    <div class="pair">
+      <div class="pane">
+        <header>Your file <span class="switcher" id="switcher"></span></header>
+        <pre><code id="mm-src"></code></pre>
+      </div>
+      <div class="pane">
+        <header>What Markmer shows</header>
+        <div class="render" id="mm-out"></div>
+      </div>
+    </div>
+    <div class="types">
+      <span>Flowchart</span><span>Sequence</span><span>Class</span><span>State</span><span>ER</span><span>Gantt</span><span>Pie</span><span>Git graph</span><span>Mindmap</span><span>Timeline</span><span>and everything else Mermaid supports</span>
+    </div>
+  </div>
+</section>
+
+<section id="lightweight">
+  <div class="wrap">
+    <span class="eyebrow">Lightweight</span>
+    <h2>Smaller than most screenshots.</h2>
+    <p class="lede">Markmer is native SwiftUI on top of the WebKit that already ships with macOS. There is no bundled browser, no runtime, no background service.</p>
+    <div class="stats">
+      <div class="stat"><div class="n">1.3<small style="font-size:20px"> MB</small></div><div class="l">download</div></div>
+      <div class="stat"><div class="n">2.1<small style="font-size:20px"> MB</small></div><div class="l">on disk, unzipped</div></div>
+      <div class="stat"><div class="n">~1k</div><div class="l">lines of code, total</div></div>
+      <div class="stat"><div class="n">0</div><div class="l">accounts, sign-ins or analytics</div></div>
+    </div>
+    <div class="light-notes">
+      <p><strong>Not Electron.</strong> Electron apps ship their own copy of Chromium, so a Markdown viewer weighs in at 100 MB or more before you open a file. Markmer uses the system WebKit and stays around 2 MB.</p>
+      <p><strong>Opens instantly.</strong> A universal binary for Apple Silicon and Intel, one window, and a sidebar of recent files. Launch it, read, close it.</p>
+      <p><strong>Nothing phones home.</strong> The renderer loads <code>marked</code>, <code>mermaid</code> and <code>highlight.js</code> from jsDelivr. Prefer fully offline? Run <code>Tools/vendor.sh</code> once and build with the libraries bundled.</p>
+      <p><strong>Readable source.</strong> Five Swift files and one HTML template. If you can read Swift, you can audit the whole app in an afternoon.</p>
+    </div>
+  </div>
+</section>
+
+<section id="features">
+  <div class="wrap">
+    <span class="eyebrow">Everything a reader needs</span>
+    <h2>And nothing it doesn't.</h2>
+    <div class="grid">
+      <div class="feat">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="M8 15V9l2.5 3L13 9v6"/><path d="M16 9v6"/></svg></div>
+        <h3>GitHub-flavoured Markdown</h3>
+        <p>Tables, task lists, strikethrough, autolinks and fenced code blocks with syntax highlighting, styled like GitHub.</p>
+      </div>
+      <div class="feat">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg></div>
+        <h3>Live reload</h3>
+        <p>Save the file in any editor and Markmer re-renders in place, keeping your scroll position.</p>
+      </div>
+      <div class="feat">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h18"/><path d="M3 12h18"/><path d="M3 19h12"/></svg></div>
+        <h3>Recent files sidebar</h3>
+        <p>Every file you open is one click away. Searchable, persistent across launches, and hideable.</p>
+      </div>
+      <div class="feat">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 9 9c0-.5 0-1-.1-1.4A5.5 5.5 0 0 1 13.4 3.1 9 9 0 0 0 12 3z"/></svg></div>
+        <h3>Light and dark</h3>
+        <p>Follows your system appearance. Code themes and Mermaid diagrams switch with it.</p>
+      </div>
+      <div class="feat">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V4h3"/><path d="M20 7V4h-3"/><path d="M4 17v3h3"/><path d="M20 17v3h-3"/><path d="M9 12h6"/><path d="M12 9v6"/></svg></div>
+        <h3>Zoom that sticks</h3>
+        <p>Toolbar buttons or <kbd>⌘−</kbd> <kbd>⌘=</kbd> <kbd>⌘0</kbd>. The level is remembered next time.</p>
+      </div>
+      <div class="feat">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v5h5"/><path d="M6 3h8l5 5v13H6z"/><path d="M10 13l2 2 4-4"/></svg></div>
+        <h3>Opens from anywhere</h3>
+        <p>Double-click in Finder, drag a file onto the window, <kbd>⌘O</kbd>, File ▸ Open Recent, or <code>open -a Markmer</code>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="install">
+  <div class="wrap">
+    <span class="eyebrow">Install</span>
+    <h2>Three steps. One extra click the first time.</h2>
+    <p class="lede">Markmer is free and has no Apple Developer subscription behind it, so it is not notarized. macOS asks you to confirm once. After that it opens like any other app.</p>
+    <div class="steps">
+      <div class="step">
+        <h3>Download and unzip</h3>
+        <p>Grab <code>Markmer-&lt;version&gt;.zip</code> from the <a href="https://github.com/dhanajitkapali/Markmer/releases/latest">latest release</a> and unzip it.</p>
+      </div>
+      <div class="step">
+        <h3>Move to Applications</h3>
+        <p>Drag <strong>Markmer.app</strong> into your Applications folder.</p>
+      </div>
+      <div class="step">
+        <h3>Open Anyway</h3>
+        <p>On first launch macOS refuses. Open <strong>System Settings → Privacy &amp; Security</strong>, scroll down, click <strong>Open Anyway</strong>, confirm. Or run once:</p>
+        <pre><code>xattr -dr com.apple.quarantine /Applications/Markmer.app</code></pre>
+      </div>
+    </div>
+    <div class="note">
+      Want <code>.md</code> files to open in Markmer by default? Right-click any Markdown file in Finder, choose <strong>Get Info</strong>, pick Markmer under <strong>Open with</strong>, and click <strong>Change All…</strong>. Every release is built by GitHub Actions from the tagged commit, and ships a <code>.sha256</code> file you can verify against.
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+  <footer>
+    <span>Markmer is open source. <a href="https://github.com/dhanajitkapali/Markmer">Source, issues and releases on GitHub</a>.</span>
+    <span>Built with SwiftUI and WebKit. Diagrams by <a href="https://mermaid.js.org">Mermaid</a>.</span>
+  </footer>
+</div>
+
+<script type="module">
+  import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+
+  const dark = matchMedia("(prefers-color-scheme: dark)").matches;
+  mermaid.initialize({ startOnLoad: false, theme: dark ? "dark" : "default", securityLevel: "strict", fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Text', Helvetica, Arial, sans-serif" });
+
+  // Hero window diagram
+  await mermaid.run({ nodes: document.querySelectorAll(".window .mermaid") });
+
+  // Side-by-side demo with switchable examples
+  const examples = {
+    Flowchart: `flowchart TD
+    A([Open .md]) --> B[Parse Markdown]
+    B --> C{Mermaid block?}
+    C -- yes --> D[Render diagram]
+    C -- no --> E[Highlight code]
+    D --> F([Display])
+    E --> F`,
+    Sequence: `sequenceDiagram
+    participant U as You
+    participant M as Markmer
+    participant E as Editor
+    U->>M: Open README.md
+    M-->>U: Rendered page
+    E->>M: File saved
+    M-->>U: Re-render, keep scroll`,
+    State: `stateDiagram-v2
+    [*] --> Draft
+    Draft --> Review: submit
+    Review --> Draft: changes requested
+    Review --> Approved: LGTM
+    Approved --> [*]`,
+    Pie: `pie showData
+    title Where the 2.1 MB goes
+    "Swift binary (universal)" : 1.1
+    "App icon assets" : 1.0
+    "Everything else" : 0.1`
+  };
+  const src = document.getElementById("mm-src");
+  const out = document.getElementById("mm-out");
+  const switcher = document.getElementById("switcher");
+  let n = 0;
+  async function show(name) {
+    src.textContent = "```mermaid\n" + examples[name] + "\n```";
+    for (const b of switcher.children) b.classList.toggle("on", b.textContent === name);
+    try {
+      const { svg } = await mermaid.render("mm-demo-" + (n++), examples[name]);
+      out.innerHTML = svg;
+    } catch (e) {
+      out.innerHTML = "<pre>" + String(e.message || e) + "</pre>";
+    }
+  }
+  for (const name of Object.keys(examples)) {
+    const b = document.createElement("button");
+    b.type = "button"; b.textContent = name; b.onclick = () => show(name);
+    switcher.appendChild(b);
+  }
+  show("Flowchart");
+</script>
+<script>
+  // Point the download button straight at the latest zip and show its real size.
+  fetch("https://api.github.com/repos/dhanajitkapali/Markmer/releases/latest")
+    .then(r => r.ok ? r.json() : null)
+    .then(rel => {
+      if (!rel) return;
+      const zip = (rel.assets || []).find(a => /^Markmer-.*\.zip$/.test(a.name));
+      if (!zip) return;
+      document.getElementById("download").href = zip.browser_download_url;
+      document.getElementById("download-label").textContent = "Download Markmer " + rel.tag_name.replace(/^v/, "");
+      document.getElementById("meta-size").textContent = (zip.size / 1e6).toFixed(1) + " MB download";
+    })
+    .catch(() => {});
+</script>
+</body>
+</html>
