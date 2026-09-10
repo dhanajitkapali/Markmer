@@ -104,6 +104,9 @@
   .cta { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; margin-top: 38px; }
   .fine { margin-top: 18px; font: 500 13px/1.6 var(--mono); color: var(--muted); display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 22px; }
   .fine span::before { content: "→ "; color: var(--teal); }
+  .brew { position: relative; display: inline-flex; align-items: center; gap: 10px; margin: 26px auto 0; padding: 10px 46px 10px 16px; border-radius: 12px; border: 1px solid var(--border); background: rgba(0,0,0,.45); font: 500 13.5px/1.4 var(--mono); color: var(--fg-2); max-width: 100%; overflow: auto; white-space: nowrap; }
+  .brew .p { color: var(--teal); user-select: none; }
+  .brew .copy { top: 50%; transform: translateY(-50%); }
 
   /* demo */
   .demo { margin: 72px auto 0; display: grid; grid-template-columns: 1fr 1fr; gap: 18px; text-align: left; position: relative; }
@@ -248,6 +251,7 @@
       </a>
     </div>
     <div class="fine"><span>Free &amp; open source</span><span>Apple Silicon + Intel</span><span>Built by GitHub Actions</span></div>
+    <div class="brew"><span class="p">$</span><span class="txt">brew install --cask dhanajitkapali/tap/markmer</span><button class="copy" type="button" aria-label="Copy command"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></div>
 
     <div class="demo rv">
       <div class="win">
@@ -343,7 +347,8 @@
       <div class="steps rv">
         <div class="step">
           <h3>Download and unzip</h3>
-          <p>Grab the zip with the button on this page, or from the <a href="https://github.com/dhanajitkapali/Markmer/releases/latest" style="color:var(--fg-2);text-decoration:underline">Releases page</a>. Double-click to unzip.</p>
+          <p>Grab the zip with the button on this page, or from the <a href="https://github.com/dhanajitkapali/Markmer/releases/latest" style="color:var(--fg-2);text-decoration:underline">Releases page</a>. Double-click to unzip. Homebrew user? One command does steps 1 and 2:</p>
+          <div class="cmd"><span class="p">$ </span><span class="txt">brew install --cask dhanajitkapali/tap/markmer</span><button class="copy" type="button" aria-label="Copy command"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></div>
         </div>
         <div class="step">
           <h3>Move to Applications</h3>
