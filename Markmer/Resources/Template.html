@@ -1,0 +1,234 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="light dark">
+<title>Markmer</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #ffffff;
+    --fg: #1f2328;
+    --muted: #656d76;
+    --border: #d0d7de;
+    --code-bg: #f6f8fa;
+    --link: #0969da;
+    --quote: #656d76;
+    --accent: #6d5df6;
+    --table-stripe: #f6f8fa;
+    --error-bg: #fff1f2;
+    --error-fg: #b42318;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1e1e1e;
+      --fg: #e6edf3;
+      --muted: #9198a1;
+      --border: #3d444d;
+      --code-bg: #262a30;
+      --link: #6fa8ff;
+      --quote: #9198a1;
+      --accent: #8b7dff;
+      --table-stripe: #24282e;
+      --error-bg: #3a1d1d;
+      --error-fg: #ff8080;
+    }
+  }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--fg); }
+  body {
+    font: 16px/1.6 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -webkit-text-size-adjust: 100%;
+    word-wrap: break-word;
+  }
+  #content { max-width: 880px; margin: 0 auto; padding: 36px 48px 96px; }
+  #content > :first-child { margin-top: 0; }
+
+  h1, h2, h3, h4, h5, h6 { margin: 1.6em 0 0.6em; line-height: 1.25; font-weight: 650; letter-spacing: -0.01em; }
+  h1 { font-size: 2em; padding-bottom: .3em; border-bottom: 1px solid var(--border); }
+  h2 { font-size: 1.5em; padding-bottom: .3em; border-bottom: 1px solid var(--border); }
+  h3 { font-size: 1.25em; } h4 { font-size: 1.05em; } h5, h6 { font-size: 1em; color: var(--muted); }
+  p, ul, ol, blockquote, table, pre, dl { margin: 0 0 1em; }
+  a { color: var(--link); text-decoration: none; } a:hover { text-decoration: underline; }
+  img { max-width: 100%; box-sizing: border-box; }
+  hr { border: 0; border-top: 2px solid var(--border); margin: 2em 0; }
+  ul, ol { padding-left: 2em; } li + li { margin-top: .25em; }
+  li > p { margin-bottom: .5em; }
+  ul.contains-task-list, li.task-list-item { list-style: none; }
+  li.task-list-item { margin-left: -1.4em; }
+  li.task-list-item input { margin: 0 .5em 0 0; vertical-align: middle; }
+  blockquote { padding: 0 1em; color: var(--quote); border-left: 4px solid var(--border); }
+  blockquote > :last-child { margin-bottom: 0; }
+
+  code, pre, kbd, samp { font-family: "SF Mono", ui-monospace, Menlo, Monaco, Consolas, monospace; }
+  code { font-size: 85%; padding: .2em .4em; background: var(--code-bg); border-radius: 6px; }
+  pre { padding: 16px; overflow: auto; font-size: 85%; line-height: 1.45; background: var(--code-bg); border-radius: 8px; }
+  pre code, pre code.hljs { padding: 0; background: transparent; font-size: 100%; display: block; overflow-x: auto; }
+  kbd { display: inline-block; padding: 2px 6px; font-size: 11px; line-height: 10px; border: 1px solid var(--border); border-bottom-width: 3px; border-radius: 6px; background: var(--code-bg); }
+
+  table { border-collapse: collapse; border-spacing: 0; display: block; width: max-content; max-width: 100%; overflow: auto; }
+  th, td { padding: 6px 13px; border: 1px solid var(--border); }
+  th { font-weight: 600; background: var(--table-stripe); }
+  tr:nth-child(2n) td { background: var(--table-stripe); }
+
+  .mermaid-diagram { display: flex; justify-content: center; margin: 1.25em 0 1.5em; padding: 20px 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--code-bg); overflow-x: auto; }
+  .mermaid-diagram svg { max-width: 100%; height: auto; }
+  .mermaid-error { margin: 1.25em 0; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--error-fg); background: var(--error-bg); color: var(--error-fg); font-size: 14px; }
+  .mermaid-error-title { font-weight: 650; margin-bottom: 6px; }
+  .mermaid-error pre { margin: 6px 0 0; background: transparent; padding: 0; color: inherit; white-space: pre-wrap; }
+  .mermaid-error pre.mermaid-source { color: var(--fg); opacity: .8; margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--error-fg); }
+
+  .markmer-notice { max-width: 880px; margin: 24px auto 0; padding: 12px 16px; border-radius: 10px; border: 1px solid var(--border); background: var(--code-bg); color: var(--muted); font-size: 14px; }
+  .markmer-notice b { color: var(--fg); }
+  .markmer-notice code { font-size: 90%; }
+  .footnotes { font-size: 90%; color: var(--muted); }
+  ::selection { background: color-mix(in srgb, var(--accent) 30%, transparent); }
+</style>
+<script>
+  window.__markmerFailures = [];
+  window.__markmerScriptFailed = function (name) { window.__markmerFailures.push(name); };
+</script>
+<!--MARKMER_ASSETS-->
+</head>
+<body>
+<div id="notice"></div>
+<article id="content"></article>
+<script id="markmer-initial" type="application/json"><!--MARKMER_INITIAL--></script>
+<script>
+(function () {
+  'use strict';
+  const content = document.getElementById('content');
+  const notice = document.getElementById('notice');
+  let source = '';
+  let rendering = false;
+  let queued = null;
+
+  const post = (msg) => { try { window.webkit.messageHandlers.markmer.postMessage(msg); } catch (e) {} };
+  const log = (m) => post({ type: 'log', message: String(m) });
+  const isDark = () => window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const escapeHtml = (s) => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+  function slugify(text) {
+    return text.toLowerCase().trim()
+      .replace(/[^\wÀ-￿\- ]+/g, '')
+      .replace(/\s+/g, '-');
+  }
+
+  function showNotice(html) { notice.innerHTML = html ? '<div class="markmer-notice">' + html + '</div>' : ''; }
+
+  function libsAvailable() {
+    const missing = [];
+    if (typeof marked === 'undefined') missing.push('marked');
+    if (typeof mermaid === 'undefined') missing.push('mermaid');
+    if (typeof hljs === 'undefined') missing.push('highlight.js');
+    return missing;
+  }
+
+  function configureMermaid() {
+    if (typeof mermaid === 'undefined') return;
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: isDark() ? 'dark' : 'default',
+      securityLevel: 'loose',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", Helvetica, Arial, sans-serif',
+      flowchart: { htmlLabels: true, curve: 'basis' },
+    });
+  }
+
+  let mermaidCounter = 0;
+  async function renderMermaidBlocks(root) {
+    const blocks = Array.from(root.querySelectorAll('pre > code.language-mermaid'));
+    for (const code of blocks) {
+      const pre = code.parentElement;
+      const src = code.textContent.replace(/\s+$/, '');
+      const container = document.createElement('div');
+      container.className = 'mermaid-diagram';
+      pre.replaceWith(container);
+      const id = 'markmer-mermaid-' + (++mermaidCounter);
+      try {
+        const result = await mermaid.render(id, src);
+        container.innerHTML = result.svg;
+        if (result.bindFunctions) result.bindFunctions(container);
+      } catch (err) {
+        container.className = 'mermaid-error';
+        container.innerHTML =
+          '<div class="mermaid-error-title">Mermaid could not render this diagram</div>' +
+          '<pre>' + escapeHtml(err && err.message ? err.message : err) + '</pre>' +
+          '<pre class="mermaid-source">' + escapeHtml(src) + '</pre>';
+      }
+      // Mermaid leaves stray error SVGs at the body root; tidy them up.
+      document.querySelectorAll('body > svg, body > div[id^="d' + id + '"], body > #' + id).forEach(n => n.remove());
+    }
+  }
+
+  async function doRender(md, keepScroll) {
+    const missing = libsAvailable();
+    if (missing.length) {
+      content.innerHTML = '<pre style="white-space:pre-wrap">' + escapeHtml(md) + '</pre>';
+      showNotice('<b>Showing raw Markdown.</b> Could not load ' + missing.join(', ') +
+        ' from the CDN. Check your internet connection and press <b>⌘R</b>, or run ' +
+        '<code>Tools/vendor.sh</code> once to bundle the libraries for offline use.');
+      return;
+    }
+    showNotice('');
+    const y = window.scrollY;
+    const html = marked.parse(md, { gfm: true, breaks: false, mangle: false, headerIds: false });
+    content.innerHTML = html;
+
+    // Heading anchors (marked ≥ 8 no longer generates ids).
+    const used = new Map();
+    content.querySelectorAll('h1,h2,h3,h4,h5,h6').forEach(h => {
+      let s = slugify(h.textContent) || 'section';
+      if (used.has(s)) { const n = used.get(s) + 1; used.set(s, n); s = s + '-' + n; } else used.set(s, 0);
+      h.id = s;
+    });
+
+    // Task lists.
+    content.querySelectorAll('input[type="checkbox"]').forEach(cb => { cb.disabled = true; });
+
+    // Open external links in the browser (handled natively); mark them.
+    content.querySelectorAll('a[href^="http"]').forEach(a => a.title = a.title || a.href);
+
+    await renderMermaidBlocks(content);
+
+    content.querySelectorAll('pre code').forEach(c => {
+      if (c.classList.contains('language-mermaid')) return;
+      try { hljs.highlightElement(c); } catch (e) { log('hljs: ' + e); }
+    });
+
+    window.scrollTo(0, keepScroll ? y : 0);
+    post({ type: 'rendered', keepScroll: keepScroll, savedY: y, scrollY: window.scrollY, height: document.documentElement.scrollHeight });
+  }
+
+  async function render(md, opts) {
+    opts = opts || {};
+    const keepScroll = opts.keepScroll !== false;
+    if (rendering) { queued = { md, keepScroll }; return; }
+    rendering = true;
+    source = md;
+    try { await doRender(md, keepScroll); }
+    catch (e) { log('render failed: ' + (e && e.stack || e)); content.innerHTML = '<pre>' + escapeHtml(e) + '</pre>'; }
+    finally {
+      rendering = false;
+      if (queued) { const q = queued; queued = null; render(q.md, { keepScroll: q.keepScroll }); }
+    }
+  }
+
+  window.markmer = { render: (md) => render(md, { keepScroll: true }) };
+
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+    configureMermaid();
+    render(source, { keepScroll: true });
+  });
+
+  function boot() {
+    configureMermaid();
+    let initial = '';
+    try { initial = JSON.parse(document.getElementById('markmer-initial').textContent); } catch (e) { log('initial parse: ' + e); }
+    render(initial, { keepScroll: false }).then(() => post({ type: 'ready' }));
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+})();
+</script>
+</body>
+</html>

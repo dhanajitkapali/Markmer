@@ -1,0 +1,7 @@
+.DS_Store
+xcuserdata/
+*.xcuserstate
+build/
+DerivedData/
+Markmer.xcodeproj/project.xcworkspace/xcuserdata/
+Markmer/Resources/vendor/
