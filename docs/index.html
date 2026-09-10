@@ -3,355 +3,330 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="color-scheme" content="light dark">
-<title>Markmer — a tiny Markdown reader for macOS with Mermaid diagrams</title>
+<meta name="color-scheme" content="dark">
+<title>Markmer — Markdown reader for macOS with Mermaid</title>
 <meta name="description" content="AI creates .md files. Your Mac can't open them. Markmer is a 1.3 MB native macOS Markdown reader that renders Mermaid diagrams inline.">
 <meta property="og:title" content="Markmer — Markdown reader for macOS">
-<meta property="og:description" content="AI creates .md files. Your Mac can't open them. Markmer does — Mermaid diagrams included, in 1.3 MB.">
+<meta property="og:description" content="AI creates .md files. Your Mac can't open them. Markmer does, Mermaid diagrams included, in 1.3 MB.">
 <meta property="og:image" content="https://dhanajitkapali.github.io/Markmer/og-image.png">
 <meta property="og:type" content="website">
+<meta name="theme-color" content="#0a0a0f">
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    color-scheme: light dark;
-    --bg: #ffffff;
-    --bg-2: #f6f8fa;
-    --fg: #1f2328;
-    --muted: #656d76;
-    --border: #d0d7de;
-    --code-bg: #f6f8fa;
-    --accent: #6d5df6;
-    --accent-2: #3ec9b6;
-    --accent-fg: #ffffff;
-    --shadow: 0 30px 80px -20px rgba(31, 35, 40, .25), 0 0 0 1px rgba(31, 35, 40, .06);
-    --window: #ffffff;
-    --titlebar: #f2f2f4;
-    --sidebar: #f7f7f9;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #141518;
-      --bg-2: #1b1d22;
-      --fg: #e6edf3;
-      --muted: #9198a1;
-      --border: #30363d;
-      --code-bg: #1e2126;
-      --accent: #8b7dff;
-      --accent-2: #4fd6c2;
-      --accent-fg: #0f0d1f;
-      --shadow: 0 30px 80px -20px rgba(0, 0, 0, .7), 0 0 0 1px rgba(255, 255, 255, .06);
-      --window: #1e1e1e;
-      --titlebar: #2a2a2d;
-      --sidebar: #232326;
-    }
+    --bg: #0a0a0f;
+    --bg-2: #0f0f16;
+    --surface: rgba(255,255,255,.035);
+    --surface-2: rgba(255,255,255,.06);
+    --border: rgba(255,255,255,.09);
+    --border-2: rgba(255,255,255,.16);
+    --fg: #ededf0;
+    --fg-2: #b9b9c6;
+    --muted: #7f7f90;
+    --purple: #8b7dff;
+    --teal: #4fd6c2;
+    --pink: #f472b6;
+    --grad: linear-gradient(120deg, #a596ff 0%, #8b7dff 35%, #4fd6c2 100%);
+    --sans: "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --mono: "JetBrains Mono", "SF Mono", ui-monospace, Menlo, Monaco, Consolas, monospace;
+    --r: 16px;
   }
   * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--fg); }
-  body {
-    font: 16px/1.6 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
+  html { scroll-behavior: smooth; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--fg); overflow-x: clip; }
+  body { font: 16px/1.6 var(--sans); -webkit-font-smoothing: antialiased; }
+  a { color: inherit; text-decoration: none; }
+  ::selection { background: rgba(139,125,255,.35); }
+  code, pre, kbd, .mono, .term, .src, .cmd { font-family: var(--mono); font-variant-ligatures: none; }
+  code { font-size: 86%; padding: .1em .4em; border-radius: 6px; background: var(--surface-2); border: 1px solid var(--border); color: var(--fg-2); }
+  kbd { display: inline-block; min-width: 26px; text-align: center; padding: 3px 7px; font-size: 12px; line-height: 14px; border-radius: 7px; border: 1px solid var(--border-2); border-bottom-width: 2px; background: var(--surface-2); color: var(--fg-2); }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+  h1, h2, h3 { margin: 0; line-height: 1.1; letter-spacing: -0.03em; font-weight: 700; text-wrap: balance; }
+  h2 { font-size: clamp(30px, 4.4vw, 46px); }
+  h3 { font-size: 17px; font-weight: 600; letter-spacing: -0.01em; }
+  .grad { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .eyebrow { display: inline-flex; align-items: center; gap: 8px; font: 500 12.5px/1 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--teal); margin-bottom: 18px; }
+  .eyebrow::before { content: ""; width: 18px; height: 1px; background: var(--teal); }
+  .lede { color: var(--muted); font-size: 18px; max-width: 640px; margin: 14px 0 0; }
+  section { padding: 110px 0; position: relative; }
+
+  /* background */
+  .bg { position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background-image: radial-gradient(rgba(255,255,255,.07) 1px, transparent 1px);
+    background-size: 28px 28px;
+    mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, #000 30%, transparent 100%);
+    -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, #000 30%, transparent 100%);
   }
-  a { color: var(--accent); text-decoration: none; }
-  a:hover { text-decoration: underline; }
-  code, pre, kbd { font-family: "SF Mono", ui-monospace, Menlo, Monaco, Consolas, monospace; }
-  code { font-size: 88%; padding: .15em .4em; background: var(--code-bg); border: 1px solid var(--border); border-radius: 6px; }
-  pre { margin: 0; padding: 14px 16px; overflow: auto; font-size: 13px; line-height: 1.5; background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px; }
-  pre code { padding: 0; border: 0; background: transparent; font-size: 100%; }
-  kbd { display: inline-block; padding: 2px 6px; font-size: 11px; line-height: 12px; border: 1px solid var(--border); border-bottom-width: 3px; border-radius: 6px; background: var(--code-bg); }
-  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
-  h1, h2, h3 { line-height: 1.15; letter-spacing: -0.02em; font-weight: 700; margin: 0; text-wrap: balance; }
-  h2 { font-size: clamp(28px, 4vw, 40px); margin-bottom: 12px; }
-  h3 { font-size: 18px; font-weight: 650; margin-bottom: 6px; }
-  .lede { color: var(--muted); font-size: 18px; max-width: 620px; margin: 0 0 36px; }
-  section { padding: 88px 0; }
-  section + section { border-top: 1px solid var(--border); }
-  .eyebrow { display: inline-block; font-size: 12px; font-weight: 650; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+  .glow { position: absolute; left: 50%; top: -240px; width: min(1100px, 100vw); height: 700px; transform: translateX(-50%); z-index: -1; pointer-events: none;
+    background: radial-gradient(closest-side, rgba(139,125,255,.28), transparent 70%), radial-gradient(closest-side at 65% 55%, rgba(79,214,194,.18), transparent 70%);
+    filter: blur(40px); }
 
-  /* Nav */
-  nav { display: flex; align-items: center; justify-content: space-between; padding: 18px 0; }
-  .brand { display: flex; align-items: center; gap: 10px; font-weight: 650; color: var(--fg); }
-  .brand img { width: 32px; height: 32px; border-radius: 8px; }
-  nav .links { display: flex; gap: 22px; font-size: 15px; }
-  nav .links a { color: var(--muted); }
-  nav .links a:hover { color: var(--fg); text-decoration: none; }
+  /* nav */
+  .nav { position: sticky; top: 0; z-index: 50; backdrop-filter: saturate(160%) blur(14px); -webkit-backdrop-filter: saturate(160%) blur(14px); background: rgba(10,10,15,.65); border-bottom: 1px solid var(--border); }
+  .nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 62px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 600; letter-spacing: -0.01em; }
+  .brand img { width: 28px; height: 28px; border-radius: 7px; }
+  .navlinks { display: flex; align-items: center; gap: 6px; }
+  .navlinks a { padding: 7px 12px; border-radius: 9px; color: var(--fg-2); font-size: 14px; font-weight: 500; transition: background .15s, color .15s; }
+  .navlinks a:hover { background: var(--surface-2); color: var(--fg); }
+  .navlinks .gh { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--border); margin-left: 6px; }
+  .navlinks .gh svg { width: 16px; height: 16px; }
+  .navlinks .gh .stars { font-family: var(--mono); font-size: 12.5px; color: var(--muted); }
+  .navlinks .gh .stars:empty { display: none; }
 
-  /* Hero */
-  .hero { padding: 56px 0 96px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 56px; align-items: center; }
-  .hero h1 { font-size: clamp(38px, 5.4vw, 64px); }
-  .hero h1 .line2 { display: block; color: var(--muted); font-weight: 600; }
-  .hero h1 .line2 strong { color: var(--fg); font-weight: 700; }
-  .hero .sub { font-size: 19px; color: var(--muted); margin: 22px 0 32px; max-width: 480px; }
-  .cta { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 18px; }
-  .btn {
-    display: inline-flex; align-items: center; gap: 10px; padding: 14px 22px; border-radius: 12px;
-    font-weight: 650; font-size: 16px; color: var(--accent-fg); text-decoration: none;
-    background: linear-gradient(135deg, var(--accent), #5a48f0); box-shadow: 0 10px 30px -10px var(--accent);
-    transition: transform .15s ease, box-shadow .15s ease;
-  }
-  .btn:hover { transform: translateY(-1px); text-decoration: none; box-shadow: 0 14px 34px -10px var(--accent); }
-  .btn svg { width: 18px; height: 18px; }
-  .btn-ghost { background: transparent; color: var(--fg); border: 1px solid var(--border); box-shadow: none; }
-  .btn-ghost:hover { box-shadow: none; background: var(--bg-2); }
-  .meta { font-size: 13px; color: var(--muted); margin-top: 16px; display: flex; flex-wrap: wrap; gap: 6px 14px; }
-  .meta span { display: inline-flex; align-items: center; gap: 6px; }
-  .meta span::before { content: ""; width: 4px; height: 4px; border-radius: 50%; background: var(--accent-2); }
+  /* buttons */
+  .btn { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 10px; height: 52px; padding: 0 26px; border-radius: 14px; font-weight: 600; font-size: 16px; letter-spacing: -0.01em; color: #0b0b12; background: #fff; transition: transform .18s ease, box-shadow .18s ease, background .18s; white-space: nowrap; }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 18px 40px -12px rgba(139,125,255,.55), 0 0 0 1px rgba(255,255,255,.2) inset; }
+  .btn:active { transform: translateY(0); }
+  .btn:focus-visible { outline: 2px solid var(--teal); outline-offset: 3px; }
+  .btn svg { width: 18px; height: 18px; flex: none; }
+  .btn.primary { color: #fff; background: linear-gradient(120deg, #7c6cff, #6a58f5); box-shadow: 0 0 0 1px rgba(255,255,255,.12) inset, 0 10px 30px -10px rgba(124,108,255,.8); }
+  .btn.primary::after { content: ""; position: absolute; inset: -1px; border-radius: 15px; padding: 1px; background: var(--grad); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; opacity: .7; pointer-events: none; }
+  .btn.ghost { color: var(--fg); background: var(--surface); border: 1px solid var(--border); }
+  .btn.ghost:hover { background: var(--surface-2); box-shadow: none; border-color: var(--border-2); }
+  .btn .ver { font-family: var(--mono); font-weight: 500; font-size: 12.5px; padding: 3px 7px; border-radius: 7px; background: rgba(255,255,255,.14); }
+  .btn .ver:empty { display: none; }
 
-  /* Fake app window */
-  .window {
-    border-radius: 14px; overflow: hidden; background: var(--window); box-shadow: var(--shadow);
-    display: grid; grid-template-columns: 168px 1fr; min-height: 440px; font-size: 13px;
-  }
-  .titlebar { grid-column: 1 / -1; height: 40px; background: var(--titlebar); display: flex; align-items: center; padding: 0 14px; gap: 8px; border-bottom: 1px solid var(--border); }
-  .dot { width: 12px; height: 12px; border-radius: 50%; }
-  .dot.r { background: #ff5f57; } .dot.y { background: #febc2e; } .dot.g { background: #28c840; }
-  .titlebar .title { margin-left: auto; margin-right: auto; color: var(--muted); font-weight: 500; }
-  .titlebar .zoom { display: flex; gap: 4px; }
-  .titlebar .zoom span { width: 24px; height: 20px; border: 1px solid var(--border); border-radius: 5px; display: grid; place-items: center; color: var(--muted); font-size: 12px; }
-  .sidebar { background: var(--sidebar); border-right: 1px solid var(--border); padding: 12px 8px; }
-  .sidebar .search { height: 26px; border-radius: 7px; border: 1px solid var(--border); background: var(--window); color: var(--muted); padding: 0 8px; display: flex; align-items: center; margin-bottom: 10px; font-size: 12px; }
-  .sidebar .item { padding: 6px 8px; border-radius: 6px; color: var(--fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .sidebar .item small { display: block; color: var(--muted); font-size: 11px; }
-  .sidebar .item.active { background: var(--accent); color: #fff; }
-  .sidebar .item.active small { color: rgba(255,255,255,.75); }
-  .doc { padding: 22px 26px; font-size: 14px; line-height: 1.55; }
-  .doc h4 { margin: 0 0 8px; font-size: 20px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
-  .doc p { margin: 0 0 10px; }
-  .doc ul { margin: 0 0 10px; padding-left: 20px; }
-  .doc .mermaid-diagram { display: flex; justify-content: center; margin: 10px 0 4px; padding: 14px 10px; border: 1px solid var(--border); border-radius: 10px; background: var(--code-bg); overflow-x: auto; }
-  .doc .mermaid-diagram svg { max-width: 100%; height: auto; }
+  /* hero */
+  .hero { padding: 96px 0 70px; text-align: center; }
+  .pill { display: inline-flex; align-items: center; gap: 10px; padding: 6px 12px 6px 8px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); font: 500 13px/1 var(--mono); color: var(--fg-2); }
+  .pill .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--teal); box-shadow: 0 0 0 4px rgba(79,214,194,.18); animation: pulse 2.4s infinite; }
+  @keyframes pulse { 0%,100% { box-shadow: 0 0 0 3px rgba(79,214,194,.18);} 50% { box-shadow: 0 0 0 7px rgba(79,214,194,.05);} }
+  .pill .sep { width: 1px; height: 12px; background: var(--border-2); }
+  .hero h1 { font-size: clamp(42px, 7vw, 88px); font-weight: 800; letter-spacing: -0.045em; margin: 28px auto 0; max-width: 16ch; }
+  .hero h1 .l2 { display: block; }
+  .hero .sub { color: var(--muted); font-size: clamp(17px, 1.6vw, 20px); max-width: 620px; margin: 26px auto 0; }
+  .hero .sub b { color: var(--fg-2); font-weight: 500; }
+  .cta { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; margin-top: 38px; }
+  .fine { margin-top: 18px; font: 500 13px/1.6 var(--mono); color: var(--muted); display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 22px; }
+  .fine span::before { content: "→ "; color: var(--teal); }
 
-  /* Problem strip */
-  .problem { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: stretch; }
-  .card { border: 1px solid var(--border); border-radius: 16px; padding: 26px 28px; background: var(--bg-2); }
-  .card .tag { font-size: 12px; font-weight: 650; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
-  .card.bad .tag { color: #d1242f; }
-  .card.good .tag { color: var(--accent-2); }
-  .card p { margin: 0; color: var(--muted); }
-  .card pre { margin-top: 16px; }
-  .raw { color: var(--muted); }
-  .raw .hl { color: var(--fg); }
+  /* demo */
+  .demo { margin: 72px auto 0; display: grid; grid-template-columns: 1fr 1fr; gap: 18px; text-align: left; position: relative; }
+  .demo::before { content: ""; position: absolute; inset: -40px 0; z-index: -1; background: radial-gradient(closest-side, rgba(139,125,255,.16), transparent); filter: blur(30px); }
+  .win { border-radius: var(--r); border: 1px solid var(--border); background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02)); box-shadow: 0 40px 90px -40px rgba(0,0,0,.9), 0 0 0 1px rgba(0,0,0,.4); overflow: hidden; display: flex; flex-direction: column; min-height: 420px; }
+  .win .bar { display: flex; align-items: center; gap: 8px; height: 42px; padding: 0 14px; border-bottom: 1px solid var(--border); background: rgba(255,255,255,.03); font: 500 12.5px/1 var(--mono); color: var(--muted); }
+  .win .bar .t { margin-left: 8px; display: inline-flex; align-items: center; gap: 8px; }
+  .win .bar .t svg { width: 14px; height: 14px; }
+  .win .bar .right { margin-left: auto; display: inline-flex; gap: 8px; align-items: center; }
+  .dots { display: inline-flex; gap: 6px; }
+  .dots i { width: 11px; height: 11px; border-radius: 50%; background: #3a3a44; }
+  .dots i:nth-child(1){ background:#ff5f57 } .dots i:nth-child(2){ background:#febc2e } .dots i:nth-child(3){ background:#28c840 }
+  .term { flex: 1; padding: 18px 20px; font: 13.5px/1.65 var(--mono); color: var(--fg-2); white-space: pre-wrap; word-break: break-word; overflow: hidden; }
+  .term .c { color: var(--muted); } .term .h { color: var(--purple); font-weight: 600; } .term .m { color: var(--teal); } .term .k { color: var(--pink); }
+  .cursor { display: inline-block; width: 8px; height: 1.1em; vertical-align: -0.2em; background: var(--teal); margin-left: 1px; animation: blink 1s steps(2) infinite; }
+  @keyframes blink { to { visibility: hidden; } }
+  .render { flex: 1; padding: 22px 26px; font: 14.5px/1.6 var(--sans); color: var(--fg-2); overflow: hidden; }
+  .render h1 { font-size: 22px; letter-spacing: -0.02em; color: var(--fg); padding-bottom: 8px; border-bottom: 1px solid var(--border); margin-bottom: 10px; }
+  .render h2 { font-size: 16px; margin: 14px 0 6px; color: var(--fg); letter-spacing: -0.01em; }
+  .render p { margin: 0 0 10px; } .render ul { margin: 0 0 10px; padding-left: 20px; }
+  .render li { margin: 2px 0; } .render li.task-list-item { list-style: none; margin-left: -20px; }
+  .render input[type=checkbox] { accent-color: var(--purple); margin-right: 8px; vertical-align: -1px; }
+  .render pre { margin: 10px 0; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--border); background: rgba(0,0,0,.35); font-size: 12.5px; line-height: 1.5; overflow: auto; color: var(--muted); }
+  .render pre code { border: 0; background: transparent; padding: 0; font-size: 100%; color: inherit; }
+  .render table { border-collapse: collapse; margin: 8px 0 10px; font-size: 13.5px; }
+  .render th, .render td { border: 1px solid var(--border); padding: 5px 10px; }
+  .render th { background: var(--surface-2); text-align: left; }
+  .render .diagram { margin: 10px 0; padding: 14px 10px; border-radius: 10px; border: 1px solid var(--border); background: rgba(0,0,0,.25); display: flex; justify-content: center; animation: fadein .5s ease; }
+  .render .diagram svg { max-width: 100%; height: auto; }
+  @keyframes fadein { from { opacity: 0; transform: translateY(4px);} to { opacity: 1; transform: none; } }
+  .replay { font: 500 12px/1 var(--mono); color: var(--muted); border: 1px solid var(--border); background: transparent; border-radius: 7px; padding: 5px 9px; cursor: pointer; }
+  .replay:hover { color: var(--fg); border-color: var(--border-2); }
 
-  /* Mermaid side by side */
-  .pair { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 24px; align-items: stretch; margin-top: 8px; }
-  .pane { border: 1px solid var(--border); border-radius: 14px; overflow: hidden; background: var(--bg-2); display: flex; flex-direction: column; }
-  .pane header { padding: 10px 16px; font-size: 12px; font-weight: 650; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; }
-  .pane pre { border: 0; border-radius: 0; flex: 1; background: transparent; }
-  .pane .render { flex: 1; display: flex; align-items: center; justify-content: center; padding: 22px; min-height: 260px; }
-  .pane .render svg { max-width: 100%; height: auto; }
-  .types { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
-  .types span { font-size: 13px; padding: 5px 11px; border-radius: 999px; border: 1px solid var(--border); color: var(--muted); }
-  .switcher { display: flex; gap: 6px; }
-  .switcher button { font: inherit; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; }
-  .switcher button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+  /* bento */
+  .bento { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; margin-top: 44px; }
+  .card { position: relative; border-radius: var(--r); border: 1px solid var(--border); background: linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,.015)); padding: 26px; overflow: hidden; transition: border-color .2s, transform .2s; }
+  .card:hover { border-color: var(--border-2); }
+  .card::before { content: ""; position: absolute; inset: 0; background: radial-gradient(600px circle at var(--mx, 50%) var(--my, 0%), rgba(139,125,255,.12), transparent 40%); opacity: 0; transition: opacity .3s; pointer-events: none; }
+  .card:hover::before { opacity: 1; }
+  .card h3 { margin-bottom: 6px; color: var(--fg); }
+  .card p { margin: 0; color: var(--muted); font-size: 15px; }
+  .card .ic { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; margin-bottom: 18px; background: var(--surface-2); border: 1px solid var(--border); color: var(--teal); }
+  .card .ic svg { width: 18px; height: 18px; }
+  .c-4 { grid-column: span 4; } .c-2 { grid-column: span 2; } .c-3 { grid-column: span 3; } .c-6 { grid-column: span 6; }
+  .mmcard { display: grid; grid-template-columns: 1fr 1.2fr; gap: 20px; align-items: stretch; }
+  .mmcard .src { border-radius: 12px; border: 1px solid var(--border); background: rgba(0,0,0,.35); padding: 14px 16px; font: 12.5px/1.55 var(--mono); color: var(--fg-2); white-space: pre; overflow: auto; }
+  .mmcard .out { border-radius: 12px; border: 1px solid var(--border); background: rgba(0,0,0,.2); display: flex; align-items: center; justify-content: center; padding: 16px; min-height: 220px; }
+  .mmcard .out svg { max-width: 100%; height: auto; }
+  .tabs { display: flex; flex-wrap: wrap; gap: 6px; margin: 18px 0 16px; }
+  .tabs button { font: 500 12.5px/1 var(--mono); padding: 7px 11px; border-radius: 8px; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; transition: all .15s; }
+  .tabs button:hover { color: var(--fg); border-color: var(--border-2); }
+  .tabs button.on { color: #fff; background: rgba(139,125,255,.22); border-color: rgba(139,125,255,.6); }
+  .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 18px; }
+  .stat { border-radius: 12px; border: 1px solid var(--border); background: rgba(0,0,0,.25); padding: 16px 18px; }
+  .stat .n { font: 700 34px/1 var(--sans); letter-spacing: -0.04em; } .stat .n small { font-size: 16px; color: var(--muted); font-weight: 600; margin-left: 4px; }
+  .stat .l { color: var(--muted); font-size: 13px; margin-top: 8px; font-family: var(--mono); }
+  .keys { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+  .keys div { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); padding: 6px 10px 6px 6px; border-radius: 10px; background: rgba(0,0,0,.25); border: 1px solid var(--border); }
+  .keys div span { margin-left: 4px; }
+  .pulse-line { position: relative; margin-top: 20px; height: 4px; border-radius: 2px; background: var(--surface-2); overflow: hidden; }
+  .pulse-line::after { content: ""; position: absolute; inset: 0; width: 40%; border-radius: 2px; background: var(--grad); animation: slide 2.2s ease-in-out infinite; }
+  @keyframes slide { 0% { transform: translateX(-100%);} 100% { transform: translateX(260%);} }
+  .compare { display: grid; grid-template-columns: 1fr auto 1fr; gap: 14px; align-items: center; margin-top: 18px; }
+  .compare .box { border-radius: 12px; border: 1px solid var(--border); background: rgba(0,0,0,.25); padding: 14px 16px; font: 12.5px/1.5 var(--mono); }
+  .compare .box .lbl { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .compare .bar { height: 10px; border-radius: 5px; background: var(--surface-2); overflow: hidden; }
+  .compare .bar i { display: block; height: 100%; background: var(--grad); }
+  .compare .arrow { color: var(--muted); font-size: 20px; }
 
-  /* Stats */
-  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin: 36px 0 28px; }
-  .stat { border: 1px solid var(--border); border-radius: 16px; padding: 22px 22px 18px; background: var(--bg-2); }
-  .stat .n { font-size: 40px; font-weight: 700; letter-spacing: -0.03em; line-height: 1; background: linear-gradient(135deg, var(--accent), var(--accent-2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
-  .stat .l { color: var(--muted); margin-top: 8px; font-size: 14px; }
-  .light-notes { display: grid; grid-template-columns: 1fr 1fr; gap: 24px 40px; color: var(--muted); }
-  .light-notes strong { color: var(--fg); }
+  /* install */
+  .install-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 40px; align-items: start; margin-top: 40px; }
+  .steps { counter-reset: s; display: flex; flex-direction: column; gap: 0; }
+  .step { position: relative; padding: 0 0 28px 44px; }
+  .step::before { counter-increment: s; content: counter(s, decimal-leading-zero); position: absolute; left: 0; top: 2px; font: 600 13px/1 var(--mono); color: var(--teal); }
+  .step::after { content: ""; position: absolute; left: 9px; top: 22px; bottom: 6px; width: 1px; background: var(--border); }
+  .step:last-child::after { display: none; }
+  .step h3 { margin-bottom: 6px; } .step p { margin: 0; color: var(--muted); font-size: 15px; }
+  .cmd { position: relative; margin-top: 12px; border-radius: 12px; border: 1px solid var(--border); background: rgba(0,0,0,.4); padding: 12px 44px 12px 16px; font: 13px/1.55 var(--mono); color: var(--fg-2); overflow: auto; white-space: pre; }
+  .cmd .p { color: var(--teal); user-select: none; }
+  .copy { position: absolute; right: 8px; top: 8px; width: 28px; height: 28px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--muted); display: grid; place-items: center; cursor: pointer; }
+  .copy:hover { color: var(--fg); border-color: var(--border-2); }
+  .copy svg { width: 14px; height: 14px; }
+  .copy.ok { color: var(--teal); }
+  .aside { border-radius: var(--r); border: 1px solid var(--border); background: linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,.015)); padding: 26px; position: sticky; top: 90px; }
+  .aside h3 { margin-bottom: 10px; }
+  .aside p { color: var(--muted); font-size: 15px; margin: 0 0 12px; }
+  .aside .btn { width: 100%; margin-top: 8px; }
+  .aside .sha { margin-top: 14px; font: 12px/1.6 var(--mono); color: var(--muted); word-break: break-all; }
 
-  /* Features */
-  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 28px; }
-  .feat { border: 1px solid var(--border); border-radius: 16px; padding: 22px; background: var(--bg-2); }
-  .feat .ic { width: 38px; height: 38px; border-radius: 10px; display: grid; place-items: center; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; margin-bottom: 14px; }
-  .feat .ic svg { width: 20px; height: 20px; }
-  .feat p { margin: 0; color: var(--muted); font-size: 15px; }
+  footer { border-top: 1px solid var(--border); padding: 40px 0 56px; color: var(--muted); font-size: 14px; }
+  footer .wrap { display: flex; flex-wrap: wrap; gap: 14px 28px; justify-content: space-between; align-items: center; }
+  footer a { color: var(--fg-2); } footer a:hover { color: var(--fg); }
 
-  /* Install */
-  .steps { counter-reset: step; display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 28px; }
-  .step { border: 1px solid var(--border); border-radius: 16px; padding: 22px; background: var(--bg-2); position: relative; }
-  .step::before { counter-increment: step; content: counter(step); position: absolute; top: 18px; right: 20px; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: #fff; font-weight: 700; font-size: 14px; display: grid; place-items: center; }
-  .step p { margin: 0; color: var(--muted); font-size: 15px; }
-  .step pre { margin-top: 12px; }
-  .note { margin-top: 22px; padding: 16px 18px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg-2); color: var(--muted); font-size: 15px; }
+  /* reveal */
+  .rv { opacity: 0; transform: translateY(18px); transition: opacity .7s ease, transform .7s ease; }
+  .rv.in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) { .rv { opacity: 1; transform: none; transition: none; } .pill .dot, .cursor, .pulse-line::after { animation: none; } html { scroll-behavior: auto; } }
 
-  footer { border-top: 1px solid var(--border); padding: 36px 0 48px; color: var(--muted); font-size: 14px; display: flex; flex-wrap: wrap; gap: 12px 28px; justify-content: space-between; }
-
-  @media (max-width: 900px) {
-    .hero { grid-template-columns: 1fr; gap: 40px; padding-top: 32px; }
-    .problem, .pair, .light-notes { grid-template-columns: 1fr; }
-    .stats { grid-template-columns: repeat(2, 1fr); }
-    .grid, .steps { grid-template-columns: 1fr; }
-    .window { grid-template-columns: 1fr; }
-    .sidebar { display: none; }
-    nav .links a:not(:last-child) { display: none; }
+  @media (max-width: 960px) {
+    .demo, .install-grid, .mmcard { grid-template-columns: 1fr; }
+    .c-4, .c-2, .c-3 { grid-column: span 6; }
+    .aside { position: static; }
+    .navlinks a:not(.gh) { display: none; }
+    section { padding: 80px 0; }
+    .hero { padding-top: 64px; }
   }
 </style>
 </head>
 <body>
+<div class="bg"></div>
 
-<div class="wrap">
-  <nav>
-    <a class="brand" href="#"><img src="icon.png" alt="" width="32" height="32"> Markmer</a>
-    <div class="links">
+<div class="nav">
+  <div class="wrap">
+    <a class="brand" href="#"><img src="icon.png" alt="" width="28" height="28"> Markmer</a>
+    <div class="navlinks">
+      <a href="#features">Features</a>
       <a href="#mermaid">Mermaid</a>
-      <a href="#lightweight">Lightweight</a>
       <a href="#install">Install</a>
-      <a href="https://github.com/dhanajitkapali/Markmer">GitHub</a>
+      <a class="gh" href="https://github.com/dhanajitkapali/Markmer" target="_blank" rel="noopener">
+        <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+        GitHub <span class="stars" id="stars"></span>
+      </a>
     </div>
-  </nav>
-
-  <header class="hero">
-    <div>
-      <h1>
-        AI creates .md files.
-        <span class="line2">Your Mac <strong>can't open them.</strong></span>
-      </h1>
-      <p class="sub">Markmer is a tiny native Markdown reader for macOS. Double-click any <code>.md</code> file and read it like a document, with Mermaid diagrams rendered right where they belong.</p>
-      <div class="cta">
-        <a class="btn" id="download" href="https://github.com/dhanajitkapali/Markmer/releases/latest">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M4 19h16"/></svg>
-          <span id="download-label">Download for macOS</span>
-        </a>
-        <a class="btn btn-ghost" href="https://github.com/dhanajitkapali/Markmer">View source</a>
-      </div>
-      <div class="meta">
-        <span id="meta-size">1.3 MB download</span>
-        <span>macOS 14 Sonoma or later</span>
-        <span>Apple Silicon &amp; Intel</span>
-        <span>Free &amp; open source</span>
-      </div>
-    </div>
-
-    <div class="window" aria-label="Markmer app window showing a rendered Markdown file with a Mermaid diagram">
-      <div class="titlebar">
-        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
-        <span class="title">PLAN.md — Markmer</span>
-        <span class="zoom"><span>−</span><span>+</span></span>
-      </div>
-      <aside class="sidebar">
-        <div class="search">Search recents</div>
-        <div class="item active">PLAN.md<small>~/Projects/api</small></div>
-        <div class="item">README.md<small>~/Projects/api</small></div>
-        <div class="item">ARCHITECTURE.md<small>~/Projects/web</small></div>
-        <div class="item">notes.md<small>~/Desktop</small></div>
-        <div class="item">CHANGELOG.md<small>~/Projects/cli</small></div>
-      </aside>
-      <div class="doc">
-        <h4>Migration plan</h4>
-        <p>Move sessions from Redis to Postgres without downtime. Rollout is gated on the shadow-write metrics.</p>
-        <ul>
-          <li><strong>Phase 1:</strong> dual-write behind a flag</li>
-          <li><strong>Phase 2:</strong> read from Postgres, fall back to Redis</li>
-        </ul>
-        <div class="mermaid-diagram"><pre class="mermaid">flowchart LR
-    A([Request]) --> B{Flag on?}
-    B -- yes --> C[(Postgres)]
-    B -- no --> D[(Redis)]
-    C --> E([Response])
-    D --> E</pre></div>
-      </div>
-    </div>
-  </header>
+  </div>
 </div>
 
-<section id="problem">
+<header class="hero">
+  <div class="glow"></div>
   <div class="wrap">
-    <span class="eyebrow">The problem</span>
-    <h2>Every AI tool writes Markdown. macOS reads it as plain text.</h2>
-    <p class="lede">Claude, ChatGPT, Copilot and Cursor hand you <code>README.md</code>, <code>PLAN.md</code> and notes full of diagrams. Double-click one on a Mac and you get TextEdit showing raw symbols, or Xcode grinding to life.</p>
-    <div class="problem">
-      <div class="card bad">
-        <div class="tag">Without Markmer</div>
-        <p>TextEdit opens the file. Headings are pound signs, tables are pipes, and the diagram is a wall of arrows.</p>
-<pre class="raw"><code># Migration plan
+    <div class="pill"><span class="dot"></span><span id="pill-ver">v1.0.0</span><span class="sep"></span><span>macOS 14+</span><span class="sep"></span><span id="pill-size">1.3 MB</span></div>
+    <h1>AI creates .md files. <span class="l2 grad">Your Mac can't open them.</span></h1>
+    <p class="sub">Markmer is a <b>tiny, native Markdown reader</b> for macOS. Double-click any <code>.md</code> and read it like a document, with <b>Mermaid diagrams rendered inline</b>. No Electron, no account, nothing to configure.</p>
+    <div class="cta">
+      <a class="btn primary" id="download" href="https://github.com/dhanajitkapali/Markmer/releases/latest">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.37 12.7c.02 2.9 2.55 3.87 2.58 3.88-.02.07-.4 1.38-1.33 2.73-.8 1.17-1.63 2.33-2.94 2.35-1.29.02-1.7-.76-3.17-.76s-1.93.74-3.15.79c-1.26.05-2.23-1.26-3.04-2.42C3.68 16.9 2.4 12.55 4.1 9.6c.85-1.47 2.36-2.4 4-2.42 1.25-.02 2.42.84 3.18.84.76 0 2.19-1.04 3.7-.89.63.03 2.4.26 3.53 1.92-.09.06-2.11 1.23-2.14 3.65zM13.98 5.27c.67-.81 1.12-1.94.99-3.07-.96.04-2.13.64-2.82 1.45-.62.72-1.16 1.87-1.01 2.97 1.07.08 2.17-.55 2.84-1.35z"/></svg>
+        <span id="download-label">Download for macOS</span>
+        <span class="ver" id="download-ver"></span>
+      </a>
+      <a class="btn ghost" href="https://github.com/dhanajitkapali/Markmer" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 18 6-6-6-6"/><path d="m8 6-6 6 6 6"/></svg>
+        View source
+      </a>
+    </div>
+    <div class="fine"><span>Free &amp; open source</span><span>Apple Silicon + Intel</span><span>Built by GitHub Actions</span></div>
 
-| Phase | Owner | Status |
-|-------|-------|--------|
-| 1     | Ana   | done   |
-
-```mermaid
-flowchart LR
-  A --> B --> C
-```</code></pre>
+    <div class="demo rv">
+      <div class="win">
+        <div class="bar"><span class="dots"><i></i><i></i><i></i></span><span class="t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/></svg>ai-assistant · writing PLAN.md</span><span class="right"><button class="replay" id="replay" type="button">replay</button></span></div>
+        <div class="term" id="term"></div>
       </div>
-      <div class="card good">
-        <div class="tag">With Markmer</div>
-        <p>The same file opens as a formatted page: real headings, a real table, syntax-highlighted code and the diagram drawn as a diagram. Edit the file in your editor and Markmer re-renders in place.</p>
-        <pre><code>open -a Markmer PLAN.md   # or just double-click it</code></pre>
+      <div class="win">
+        <div class="bar"><span class="dots"><i></i><i></i><i></i></span><span class="t"><img src="favicon.png" alt="" width="14" height="14" style="border-radius:3px">PLAN.md — Markmer</span><span class="right"><span>− </span><span>+</span></span></div>
+        <div class="render" id="render"></div>
       </div>
     </div>
   </div>
-</section>
-
-<section id="mermaid">
-  <div class="wrap">
-    <span class="eyebrow">Mermaid, built in</span>
-    <h2>Diagrams render inline. No plugin, no browser tab.</h2>
-    <p class="lede">A <code>```mermaid</code> fence becomes a drawing, themed to match light or dark mode. If a diagram has a syntax error, Markmer shows the error and the source instead of a blank box.</p>
-    <div class="pair">
-      <div class="pane">
-        <header>Your file <span class="switcher" id="switcher"></span></header>
-        <pre><code id="mm-src"></code></pre>
-      </div>
-      <div class="pane">
-        <header>What Markmer shows</header>
-        <div class="render" id="mm-out"></div>
-      </div>
-    </div>
-    <div class="types">
-      <span>Flowchart</span><span>Sequence</span><span>Class</span><span>State</span><span>ER</span><span>Gantt</span><span>Pie</span><span>Git graph</span><span>Mindmap</span><span>Timeline</span><span>and everything else Mermaid supports</span>
-    </div>
-  </div>
-</section>
-
-<section id="lightweight">
-  <div class="wrap">
-    <span class="eyebrow">Lightweight</span>
-    <h2>Smaller than most screenshots.</h2>
-    <p class="lede">Markmer is native SwiftUI on top of the WebKit that already ships with macOS. There is no bundled browser, no runtime, no background service.</p>
-    <div class="stats">
-      <div class="stat"><div class="n">1.3<small style="font-size:20px"> MB</small></div><div class="l">download</div></div>
-      <div class="stat"><div class="n">2.1<small style="font-size:20px"> MB</small></div><div class="l">on disk, unzipped</div></div>
-      <div class="stat"><div class="n">~1k</div><div class="l">lines of code, total</div></div>
-      <div class="stat"><div class="n">0</div><div class="l">accounts, sign-ins or analytics</div></div>
-    </div>
-    <div class="light-notes">
-      <p><strong>Not Electron.</strong> Electron apps ship their own copy of Chromium, so a Markdown viewer weighs in at 100 MB or more before you open a file. Markmer uses the system WebKit and stays around 2 MB.</p>
-      <p><strong>Opens instantly.</strong> A universal binary for Apple Silicon and Intel, one window, and a sidebar of recent files. Launch it, read, close it.</p>
-      <p><strong>Nothing phones home.</strong> The renderer loads <code>marked</code>, <code>mermaid</code> and <code>highlight.js</code> from jsDelivr. Prefer fully offline? Run <code>Tools/vendor.sh</code> once and build with the libraries bundled.</p>
-      <p><strong>Readable source.</strong> Five Swift files and one HTML template. If you can read Swift, you can audit the whole app in an afternoon.</p>
-    </div>
-  </div>
-</section>
+</header>
 
 <section id="features">
   <div class="wrap">
-    <span class="eyebrow">Everything a reader needs</span>
-    <h2>And nothing it doesn't.</h2>
-    <div class="grid">
-      <div class="feat">
-        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="M8 15V9l2.5 3L13 9v6"/><path d="M16 9v6"/></svg></div>
-        <h3>GitHub-flavoured Markdown</h3>
-        <p>Tables, task lists, strikethrough, autolinks and fenced code blocks with syntax highlighting, styled like GitHub.</p>
+    <div class="rv">
+      <span class="eyebrow">Features</span>
+      <h2>Everything a reader needs. <span class="grad">Nothing it doesn't.</span></h2>
+      <p class="lede">One window, a sidebar of recent files, and a renderer that gets out of your way. Markmer is a viewer, not another editor.</p>
+    </div>
+    <div class="bento">
+      <div class="card c-4 rv" id="mermaid">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="6" height="6" rx="1.5"/><rect x="15" y="15" width="6" height="6" rx="1.5"/><rect x="15" y="3" width="6" height="6" rx="1.5"/><path d="M9 6h6"/><path d="M18 9v6"/><path d="M6 9v9h9"/></svg></div>
+        <h3>Mermaid, built in</h3>
+        <p>A <code>```mermaid</code> fence becomes a drawing. Every diagram type Mermaid supports, themed to match. Broken syntax shows the error and source instead of a blank box.</p>
+        <div class="tabs" id="tabs"></div>
+        <div class="mmcard">
+          <div class="src" id="mm-src"></div>
+          <div class="out" id="mm-out"></div>
+        </div>
       </div>
-      <div class="feat">
+      <div class="card c-2 rv">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg></div>
+        <h3>Absurdly light</h3>
+        <p>Native SwiftUI on the WebKit already in macOS. No bundled browser, no runtime.</p>
+        <div class="stats">
+          <div class="stat"><div class="n" id="stat-size">1.3<small>MB</small></div><div class="l">download</div></div>
+          <div class="stat"><div class="n">2.1<small>MB</small></div><div class="l">on disk</div></div>
+          <div class="stat"><div class="n">~1k</div><div class="l">lines of code</div></div>
+          <div class="stat"><div class="n">0</div><div class="l">accounts / analytics</div></div>
+        </div>
+        <div class="compare">
+          <div class="box"><div class="lbl">Typical Electron viewer</div><div class="bar"><i style="width:100%"></i></div><div style="margin-top:6px;color:var(--muted)">≈ 150 MB</div></div>
+          <div class="arrow">→</div>
+          <div class="box"><div class="lbl">Markmer</div><div class="bar"><i style="width:2%"></i></div><div style="margin-top:6px;color:var(--teal)">2.1 MB</div></div>
+        </div>
+      </div>
+      <div class="card c-2 rv">
         <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg></div>
         <h3>Live reload</h3>
-        <p>Save the file in any editor and Markmer re-renders in place, keeping your scroll position.</p>
+        <p>Save in your editor, or let your AI agent rewrite the file. Markmer re-renders in place and keeps your scroll position.</p>
+        <div class="pulse-line"></div>
       </div>
-      <div class="feat">
+      <div class="card c-2 rv">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="M8 15V9l2.5 3L13 9v6"/><path d="M16 9v6"/></svg></div>
+        <h3>GitHub-flavoured Markdown</h3>
+        <p>Tables, task lists, strikethrough, autolinks, and fenced code with syntax highlighting. Styled the way GitHub renders it, because that is what you expect.</p>
+      </div>
+      <div class="card c-2 rv">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M6 9h.01M10 9h.01M14 9h.01M18 9h.01M8 13h.01M12 13h.01M16 13h.01M7 17h10"/></svg></div>
+        <h3>Keyboard first</h3>
+        <p>Open, zoom, reset, and jump through recents without touching the mouse. Zoom level is remembered.</p>
+        <div class="keys">
+          <div><kbd>⌘</kbd><kbd>O</kbd><span>open</span></div>
+          <div><kbd>⌘</kbd><kbd>=</kbd><span>zoom in</span></div>
+          <div><kbd>⌘</kbd><kbd>−</kbd><span>zoom out</span></div>
+          <div><kbd>⌘</kbd><kbd>0</kbd><span>reset</span></div>
+        </div>
+      </div>
+      <div class="card c-3 rv">
         <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h18"/><path d="M3 12h18"/><path d="M3 19h12"/></svg></div>
-        <h3>Recent files sidebar</h3>
-        <p>Every file you open is one click away. Searchable, persistent across launches, and hideable.</p>
+        <h3>Recents sidebar</h3>
+        <p>Every file you open is one click away. Searchable, persistent across launches, hideable when you want the page to yourself.</p>
       </div>
-      <div class="feat">
-        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 9 9c0-.5 0-1-.1-1.4A5.5 5.5 0 0 1 13.4 3.1 9 9 0 0 0 12 3z"/></svg></div>
-        <h3>Light and dark</h3>
-        <p>Follows your system appearance. Code themes and Mermaid diagrams switch with it.</p>
-      </div>
-      <div class="feat">
-        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V4h3"/><path d="M20 7V4h-3"/><path d="M4 17v3h3"/><path d="M20 17v3h-3"/><path d="M9 12h6"/><path d="M12 9v6"/></svg></div>
-        <h3>Zoom that sticks</h3>
-        <p>Toolbar buttons or <kbd>⌘−</kbd> <kbd>⌘=</kbd> <kbd>⌘0</kbd>. The level is remembered next time.</p>
-      </div>
-      <div class="feat">
+      <div class="card c-3 rv">
         <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v5h5"/><path d="M6 3h8l5 5v13H6z"/><path d="M10 13l2 2 4-4"/></svg></div>
         <h3>Opens from anywhere</h3>
-        <p>Double-click in Finder, drag a file onto the window, <kbd>⌘O</kbd>, File ▸ Open Recent, or <code>open -a Markmer</code>.</p>
+        <p>Double-click in Finder, drop a file on the window, <kbd>⌘O</kbd>, File ▸ Open Recent, or from the terminal: <code>open -a Markmer README.md</code></p>
       </div>
     </div>
   </div>
@@ -359,109 +334,218 @@ flowchart LR
 
 <section id="install">
   <div class="wrap">
-    <span class="eyebrow">Install</span>
-    <h2>Three steps. One extra click the first time.</h2>
-    <p class="lede">Markmer is free and has no Apple Developer subscription behind it, so it is not notarized. macOS asks you to confirm once. After that it opens like any other app.</p>
-    <div class="steps">
-      <div class="step">
-        <h3>Download and unzip</h3>
-        <p>Grab <code>Markmer-&lt;version&gt;.zip</code> from the <a href="https://github.com/dhanajitkapali/Markmer/releases/latest">latest release</a> and unzip it.</p>
-      </div>
-      <div class="step">
-        <h3>Move to Applications</h3>
-        <p>Drag <strong>Markmer.app</strong> into your Applications folder.</p>
-      </div>
-      <div class="step">
-        <h3>Open Anyway</h3>
-        <p>On first launch macOS refuses. Open <strong>System Settings → Privacy &amp; Security</strong>, scroll down, click <strong>Open Anyway</strong>, confirm. Or run once:</p>
-        <pre><code>xattr -dr com.apple.quarantine /Applications/Markmer.app</code></pre>
-      </div>
+    <div class="rv">
+      <span class="eyebrow">Install</span>
+      <h2>Thirty seconds. <span class="grad">One extra click the first time.</span></h2>
+      <p class="lede">Markmer is free and has no Apple Developer subscription behind it, so it is not notarized. macOS asks you to confirm once, then it opens like any other app.</p>
     </div>
-    <div class="note">
-      Want <code>.md</code> files to open in Markmer by default? Right-click any Markdown file in Finder, choose <strong>Get Info</strong>, pick Markmer under <strong>Open with</strong>, and click <strong>Change All…</strong>. Every release is built by GitHub Actions from the tagged commit, and ships a <code>.sha256</code> file you can verify against.
+    <div class="install-grid">
+      <div class="steps rv">
+        <div class="step">
+          <h3>Download and unzip</h3>
+          <p>Grab the zip with the button on this page, or from the <a href="https://github.com/dhanajitkapali/Markmer/releases/latest" style="color:var(--fg-2);text-decoration:underline">Releases page</a>. Double-click to unzip.</p>
+        </div>
+        <div class="step">
+          <h3>Move to Applications</h3>
+          <p>Drag <b style="color:var(--fg-2)">Markmer.app</b> into your Applications folder.</p>
+        </div>
+        <div class="step">
+          <h3>Allow it once</h3>
+          <p>On first launch macOS refuses. Open <b style="color:var(--fg-2)">System Settings → Privacy &amp; Security</b>, scroll down, click <b style="color:var(--fg-2)">Open Anyway</b>. Or skip the dialog entirely:</p>
+          <div class="cmd"><span class="p">$ </span><span class="txt">xattr -dr com.apple.quarantine /Applications/Markmer.app</span><button class="copy" type="button" aria-label="Copy command"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></div>
+        </div>
+        <div class="step">
+          <h3>Make it the default for .md</h3>
+          <p>Right-click any Markdown file in Finder → <b style="color:var(--fg-2)">Get Info</b> → Open with: Markmer → <b style="color:var(--fg-2)">Change All…</b> From then on, double-click just works.</p>
+          <div class="cmd"><span class="p">$ </span><span class="txt">open -a Markmer README.md</span><button class="copy" type="button" aria-label="Copy command"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></div>
+        </div>
+      </div>
+      <div class="aside rv">
+        <h3>Latest build</h3>
+        <p id="aside-desc">Universal binary for Apple Silicon and Intel Macs, macOS 14 Sonoma or later.</p>
+        <a class="btn primary" id="download2" href="https://github.com/dhanajitkapali/Markmer/releases/latest">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M4 19h16"/></svg>
+          <span id="download2-label">Download for macOS</span>
+        </a>
+        <div class="sha" id="sha">Every release is built by GitHub Actions from the tagged commit and ships with a .sha256 checksum.</div>
+      </div>
     </div>
   </div>
 </section>
 
-<div class="wrap">
-  <footer>
-    <span>Markmer is open source. <a href="https://github.com/dhanajitkapali/Markmer">Source, issues and releases on GitHub</a>.</span>
-    <span>Built with SwiftUI and WebKit. Diagrams by <a href="https://mermaid.js.org">Mermaid</a>.</span>
-  </footer>
-</div>
+<footer>
+  <div class="wrap">
+    <span>© Markmer. Open source, <a href="https://github.com/dhanajitkapali/Markmer">source and issues on GitHub</a>.</span>
+    <span>Built with SwiftUI and WebKit. Diagrams by <a href="https://mermaid.js.org" target="_blank" rel="noopener">Mermaid</a>.</span>
+  </div>
+</footer>
 
 <script type="module">
   import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+  import { marked } from "https://cdn.jsdelivr.net/npm/marked@12/lib/marked.esm.js";
 
-  const dark = matchMedia("(prefers-color-scheme: dark)").matches;
-  mermaid.initialize({ startOnLoad: false, theme: dark ? "dark" : "default", securityLevel: "strict", fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Text', Helvetica, Arial, sans-serif" });
+  mermaid.initialize({
+    startOnLoad: false, theme: "base", securityLevel: "strict",
+    fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif",
+    themeVariables: {
+      darkMode: true, background: "#0a0a0f", primaryColor: "#2a2650", primaryTextColor: "#ededf0", primaryBorderColor: "#8b7dff",
+      secondaryColor: "#123e3a", secondaryBorderColor: "#4fd6c2", tertiaryColor: "#16161f", tertiaryBorderColor: "#3a3a48",
+      lineColor: "#8b8b98", textColor: "#ededf0", mainBkg: "#2a2650", nodeBorder: "#8b7dff", clusterBkg: "#16161f",
+      actorBkg: "#2a2650", actorBorder: "#8b7dff", actorTextColor: "#ededf0", signalColor: "#b9b9c6", signalTextColor: "#ededf0",
+      labelBoxBkgColor: "#16161f", labelTextColor: "#ededf0", noteBkgColor: "#123e3a", noteTextColor: "#ededf0", noteBorderColor: "#4fd6c2",
+      pie1: "#8b7dff", pie2: "#4fd6c2", pie3: "#f472b6", pie4: "#fbbf24", pieTitleTextColor: "#ededf0", pieSectionTextColor: "#0a0a0f", pieLegendTextColor: "#b9b9c6", pieStrokeColor: "#0a0a0f",
+      fontSize: "14px"
+    }
+  });
+  let uid = 0;
+  async function draw(code) {
+    const { svg } = await mermaid.render("mm" + (uid++), code);
+    return svg;
+  }
 
-  // Hero window diagram
-  await mermaid.run({ nodes: document.querySelectorAll(".window .mermaid") });
+  /* ---------- Typing demo ---------- */
+  const doc = `# Auth service rewrite
 
-  // Side-by-side demo with switchable examples
+Move token validation to the edge. Rollout gated on **p99 < 40 ms**.
+
+- [x] Spike: edge runtime benchmarks
+- [ ] Ship behind \`edge_auth\` flag
+
+| Stage  | Traffic | Owner |
+|--------|---------|-------|
+| Canary | 1%      | Ana   |
+| GA     | 100%    | Ravi  |
+
+\`\`\`mermaid
+sequenceDiagram
+    Client->>Edge: GET /api (JWT)
+    Edge->>Edge: verify signature
+    Edge-->>Client: 401 if invalid
+    Edge->>Origin: forward + user id
+    Origin-->>Client: 200 OK
+\`\`\`
+`;
+  const term = document.getElementById("term");
+  const out = document.getElementById("render");
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function colorize(s) {
+    return s.replace(/&/g, "&amp;").replace(/</g, "&lt;")
+      .replace(/^(#+ .*)$/gm, '<span class="h">$1</span>')
+      .replace(/^(```.*)$/gm, '<span class="m">$1</span>')
+      .replace(/(\*\*[^*]+\*\*|`[^`\n]+`)/g, '<span class="k">$1</span>')
+      .replace(/^(\|.*\|)$/gm, '<span class="c">$1</span>');
+  }
+  async function renderMd(s, finished) {
+    out.innerHTML = marked.parse(s, { gfm: true, breaks: false });
+    if (finished) {
+      for (const pre of out.querySelectorAll("pre")) {
+        const code = pre.querySelector("code.language-mermaid");
+        if (!code) continue;
+        try {
+          const svg = await draw(code.textContent);
+          const box = document.createElement("div"); box.className = "diagram"; box.innerHTML = svg;
+          pre.replaceWith(box);
+        } catch (e) { /* leave source */ }
+      }
+    }
+  }
+  let run = 0;
+  async function play() {
+    const my = ++run;
+    if (reduced) { term.innerHTML = colorize(doc); await renderMd(doc, true); return; }
+    let i = 0;
+    while (i <= doc.length && my === run) {
+      const s = doc.slice(0, i);
+      term.innerHTML = colorize(s) + '<span class="cursor"></span>';
+      if (i % 3 === 0 || i === doc.length) await renderMd(s, false);
+      const ch = doc[i] || "";
+      i++;
+      await new Promise(r => setTimeout(r, ch === "\n" ? 70 : 9 + Math.random() * 16));
+    }
+    if (my !== run) return;
+    term.innerHTML = colorize(doc);
+    await renderMd(doc, true);
+    setTimeout(() => { if (my === run) play(); }, 9000);
+  }
+  document.getElementById("replay").onclick = () => play();
+  new IntersectionObserver((es, o) => { if (es[0].isIntersecting) { play(); o.disconnect(); } }, { threshold: .2 }).observe(document.querySelector(".demo"));
+
+  /* ---------- Mermaid switcher ---------- */
   const examples = {
-    Flowchart: `flowchart TD
-    A([Open .md]) --> B[Parse Markdown]
-    B --> C{Mermaid block?}
-    C -- yes --> D[Render diagram]
+    flowchart: `flowchart LR
+    A([Open .md]) --> B[Parse]
+    B --> C{mermaid?}
+    C -- yes --> D[Draw diagram]
     C -- no --> E[Highlight code]
-    D --> F([Display])
-    E --> F`,
-    Sequence: `sequenceDiagram
-    participant U as You
-    participant M as Markmer
-    participant E as Editor
-    U->>M: Open README.md
-    M-->>U: Rendered page
-    E->>M: File saved
-    M-->>U: Re-render, keep scroll`,
-    State: `stateDiagram-v2
+    D & E --> F([Display])`,
+    sequence: `sequenceDiagram
+    You->>Markmer: open README.md
+    Markmer-->>You: rendered page
+    Editor->>Markmer: file saved
+    Markmer-->>You: re-render, keep scroll`,
+    state: `stateDiagram-v2
     [*] --> Draft
     Draft --> Review: submit
-    Review --> Draft: changes requested
+    Review --> Draft: changes
     Review --> Approved: LGTM
     Approved --> [*]`,
-    Pie: `pie showData
+    gantt: `gantt
+    dateFormat YYYY-MM-DD
+    axisFormat %b %d
+    section Build
+    Core reader     :done, a1, 2026-09-01, 5d
+    Mermaid support :done, a2, after a1, 3d
+    section Ship
+    Release 1.0     :active, b1, 2026-09-10, 2d`,
+    pie: `pie showData
     title Where the 2.1 MB goes
-    "Swift binary (universal)" : 1.1
+    "Swift binary" : 1.1
     "App icon assets" : 1.0
     "Everything else" : 0.1`
   };
-  const src = document.getElementById("mm-src");
-  const out = document.getElementById("mm-out");
-  const switcher = document.getElementById("switcher");
-  let n = 0;
+  const tabs = document.getElementById("tabs"), src = document.getElementById("mm-src"), mmOut = document.getElementById("mm-out");
   async function show(name) {
     src.textContent = "```mermaid\n" + examples[name] + "\n```";
-    for (const b of switcher.children) b.classList.toggle("on", b.textContent === name);
-    try {
-      const { svg } = await mermaid.render("mm-demo-" + (n++), examples[name]);
-      out.innerHTML = svg;
-    } catch (e) {
-      out.innerHTML = "<pre>" + String(e.message || e) + "</pre>";
-    }
+    for (const b of tabs.children) b.classList.toggle("on", b.dataset.k === name);
+    try { mmOut.innerHTML = await draw(examples[name]); } catch (e) { mmOut.innerHTML = "<pre>" + String(e.message || e) + "</pre>"; }
   }
-  for (const name of Object.keys(examples)) {
-    const b = document.createElement("button");
-    b.type = "button"; b.textContent = name; b.onclick = () => show(name);
-    switcher.appendChild(b);
+  for (const k of Object.keys(examples)) {
+    const b = document.createElement("button"); b.type = "button"; b.dataset.k = k; b.textContent = k; b.onclick = () => show(k); tabs.appendChild(b);
   }
-  show("Flowchart");
+  show("flowchart");
 </script>
 <script>
-  // Point the download button straight at the latest zip and show its real size.
-  fetch("https://api.github.com/repos/dhanajitkapali/Markmer/releases/latest")
-    .then(r => r.ok ? r.json() : null)
-    .then(rel => {
-      if (!rel) return;
-      const zip = (rel.assets || []).find(a => /^Markmer-.*\.zip$/.test(a.name));
-      if (!zip) return;
-      document.getElementById("download").href = zip.browser_download_url;
-      document.getElementById("download-label").textContent = "Download Markmer " + rel.tag_name.replace(/^v/, "");
-      document.getElementById("meta-size").textContent = (zip.size / 1e6).toFixed(1) + " MB download";
-    })
-    .catch(() => {});
+  // Latest release → direct zip link, version, size. Star count for the nav.
+  const fmt = b => (b / 1e6).toFixed(1) + " MB";
+  fetch("https://api.github.com/repos/dhanajitkapali/Markmer/releases/latest").then(r => r.ok ? r.json() : null).then(rel => {
+    if (!rel) return;
+    const zip = (rel.assets || []).find(a => /^Markmer-.*\.zip$/.test(a.name));
+    if (!zip) return;
+    const v = rel.tag_name.replace(/^v/, "");
+    for (const id of ["download", "download2"]) document.getElementById(id).href = zip.browser_download_url;
+    document.getElementById("download-ver").textContent = "v" + v;
+    document.getElementById("download2-label").textContent = "Download Markmer " + v;
+    document.getElementById("pill-ver").textContent = "v" + v;
+    document.getElementById("pill-size").textContent = fmt(zip.size);
+    document.getElementById("stat-size").innerHTML = fmt(zip.size).replace(" MB", "<small>MB</small>");
+    document.getElementById("aside-desc").textContent = zip.name + " · " + fmt(zip.size) + " · universal binary for Apple Silicon and Intel, macOS 14 or later.";
+  }).catch(() => {});
+  fetch("https://api.github.com/repos/dhanajitkapali/Markmer").then(r => r.ok ? r.json() : null).then(d => {
+    if (d && d.stargazers_count > 0) document.getElementById("stars").textContent = "★ " + d.stargazers_count;
+  }).catch(() => {});
+
+  // Copy buttons
+  for (const btn of document.querySelectorAll(".copy")) btn.addEventListener("click", async () => {
+    try { await navigator.clipboard.writeText(btn.parentElement.querySelector(".txt").textContent); btn.classList.add("ok"); setTimeout(() => btn.classList.remove("ok"), 1200); } catch (e) {}
+  });
+
+  // Scroll reveal + card spotlight
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { threshold: .12 });
+  document.querySelectorAll(".rv").forEach(el => io.observe(el));
+  document.querySelectorAll(".card").forEach(c => c.addEventListener("pointermove", e => {
+    const r = c.getBoundingClientRect(); c.style.setProperty("--mx", (e.clientX - r.left) + "px"); c.style.setProperty("--my", (e.clientY - r.top) + "px");
+  }));
 </script>
 </body>
 </html>
