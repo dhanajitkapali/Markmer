@@ -13,6 +13,25 @@ A native macOS Markdown reader with built-in Mermaid diagram rendering and a sid
 - Live reload when the file changes on disk, keeping the scroll position
 - Zoom with the toolbar − / + buttons or ⌘− / ⌘= (⌘0 resets); the level is remembered
 
+## Install
+
+Grab the latest `Markmer-<version>.zip` from the [Releases page](https://github.com/dhanajitkapali/Markmer/releases), unzip it, and drag **Markmer.app** into your Applications folder.
+
+Markmer is not notarized (it is a free, open-source app with no Apple Developer subscription behind it), so macOS blocks the very first launch. Either:
+
+- open **System Settings → Privacy & Security**, scroll down, click **Open Anyway**, and confirm; or
+- run this once in Terminal:
+
+  ```bash
+  xattr -dr com.apple.quarantine /Applications/Markmer.app
+  ```
+
+After that it opens like any other app. To open a file from the command line:
+
+```bash
+open -a Markmer README.md
+```
+
 ## Build
 
 Requires Xcode 16 or newer and [xcodegen](https://github.com/yonaskolb/XcodeGen) (`brew install xcodegen`).
@@ -34,6 +53,20 @@ By default the renderer loads `marked`, `mermaid` and `highlight.js` from jsDeli
 
 ```bash
 ./Tools/vendor.sh
+```
+
+## Cut a release
+
+Bump `MARKETING_VERSION` in `project.yml`, commit, then tag and push:
+
+```bash
+git tag v1.0.0 && git push origin main --tags
+```
+
+GitHub Actions ([release.yml](.github/workflows/release.yml)) builds the app, zips it, and attaches it to a GitHub Release with install notes. To build the same zip locally:
+
+```bash
+./Tools/release.sh
 ```
 
 ## Regenerate the icon
